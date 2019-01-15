@@ -28,7 +28,7 @@ void main() {
   offset_fetch_test.main();
   offset_test.main();
   produce_test.main();
-  consumer_group_test.main();
+  //consumer_group_test.main();
   producer_test.main();
   consumer_test.main();
   fetcher_test.main();

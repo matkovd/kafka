@@ -61,9 +61,9 @@ class Producer {
         await session.getMetadata(topicNames, invalidateCache: refreshMetadata);
 
     var byBroker = new ListMultimap<Broker, ProduceEnvelope>.fromIterable(
-        messages, key: (ProduceEnvelope _) {
+        messages, key: (producerEnvelope) {
       var leaderId =
-          meta.getTopicMetadata(_.topicName).getPartition(_.partitionId).leader;
+          meta.getTopicMetadata(producerEnvelope.topicName).getPartition(producerEnvelope.partitionId).leader;
       return meta.getBroker(leaderId);
     });
     kafkaLogger.fine('Producer: sending ProduceRequests');

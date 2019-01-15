@@ -109,7 +109,7 @@ class OffsetResponse {
       while (partitionCount > 0) {
         var partitionId = reader.readInt32();
         var errorCode = reader.readInt16();
-        var partitionOffsets = reader.readArray(KafkaType.int64);
+        var partitionOffsets = reader.readArray(KafkaType.int64).cast<int>();
         offsets.add(new TopicOffsets._(topicName, partitionId, errorCode,
             partitionOffsets)); // ignore: STRONG_MODE_DOWN_CAST_COMPOSITE
         partitionCount--;

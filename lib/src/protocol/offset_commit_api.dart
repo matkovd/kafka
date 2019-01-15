@@ -35,17 +35,24 @@ class OffsetCommitRequest extends KafkaRequest {
     var builder = new KafkaBytesBuilder.withRequestHeader(
         apiKey, apiVersion, correlationId);
 
-    // TODO: replace groupBy with ListMultimap
-    // ignore: STRONG_MODE_DOWN_CAST_COMPOSITE
-    Map<String, List<ConsumerOffset>> groupedByTopic = groupBy(
-        offsets, (o) => o.topicName); // ignore: STRONG_MODE_DOWN_CAST_COMPOSITE
+    // TODO: replace for with ListMultimap
+    Map<String, List<ConsumerOffset>> groupedByTopic = HashMap<String, List<ConsumerOffset>>();
+    for(var offset in offsets) {
+      if (groupedByTopic[offset.topicName] == null) {
+        groupedByTopic[offset.topicName] = List<ConsumerOffset>.of([offset]);
+      } else {
+        groupedByTopic[offset.topicName].add(offset);
+      }
+    }
+
     var timestamp = new DateTime.now().millisecondsSinceEpoch;
     builder.addString(consumerGroup);
     builder.addInt32(consumerGroupGenerationId);
     builder.addString(consumerId);
     builder.addInt32(groupedByTopic.length);
-    groupedByTopic.forEach((topicName, partitionOffsets) {
-      builder.addString(topicName);
+    for (String topic in groupedByTopic.keys) {
+      List<ConsumerOffset> partitionOffsets = (groupedByTopic[topic]).cast<ConsumerOffset>();
+      builder.addString(topic);
       builder.addInt32(partitionOffsets.length);
       partitionOffsets.forEach((p) {
         builder.addInt32(p.partitionId);
@@ -53,7 +60,7 @@ class OffsetCommitRequest extends KafkaRequest {
         builder.addInt64(timestamp);
         builder.addString(p.metadata);
       });
-    });
+    }
 
     var body = builder.takeBytes();
     builder.addBytes(body);

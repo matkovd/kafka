@@ -34,7 +34,7 @@ class FetchRequest extends KafkaRequest {
       [int maxBytes = 65536]) {
     //
     if (!_topics.containsKey(topicName)) {
-      _topics[topicName] = new List();
+      _topics[topicName] = new List<_FetchPartitionInfo>();
     }
     _topics[topicName]
         .add(new _FetchPartitionInfo(partitionId, fetchOffset, maxBytes));

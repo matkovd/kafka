@@ -24,7 +24,7 @@ class KafkaSession {
   final Queue<ContactPoint> contactPoints;
 
   Map<String, Future<Socket>> _sockets = new Map();
-  Map<String, StreamSubscription> _subscriptions = new Map();
+  Map<String, StreamSubscription<List<int>>> _subscriptions = new Map();
   Map<String, List<int>> _buffers = new Map();
   Map<String, int> _sizes = new Map();
   Map<KafkaRequest, Completer> _inflightRequests = new Map();
@@ -251,9 +251,11 @@ class KafkaSession {
       _sockets[key] = Socket.connect(host, port);
       _sockets[key].then((socket) {
         socket.setOption(SocketOption.TCP_NODELAY, true);
-        _buffers[key] = new List();
+        _buffers[key] = new List<int>();
         _sizes[key] = -1;
-        _subscriptions[key] = socket.listen((d) => _handleData(key, d));
+        _subscriptions[key] = socket.listen((List<int> d)  {
+          _handleData(key, d);
+        });
         _flushFutures[socket] = new Future.value();
       }, onError: (error) {
         _sockets.remove(key);

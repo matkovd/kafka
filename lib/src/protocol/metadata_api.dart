@@ -79,7 +79,7 @@ class TopicMetadata {
     var errorCode = reader.readInt16();
     var topicName = reader.readString();
     List partitions = reader.readArray(
-        KafkaType.object, (reader) => new PartitionMetadata._readFrom(reader));
+        KafkaType.object, (reader) => new PartitionMetadata._readFrom(reader)).cast<PartitionMetadata>();
     // ignore: STRONG_MODE_DOWN_CAST_COMPOSITE
     return new TopicMetadata._(errorCode, topicName, partitions);
   }
@@ -107,8 +107,8 @@ class PartitionMetadata {
     var errorCode = reader.readInt16();
     var partitionId = reader.readInt32();
     var leader = reader.readInt32();
-    var replicas = reader.readArray(KafkaType.int32);
-    var inSyncReplicas = reader.readArray(KafkaType.int32);
+    var replicas = reader.readArray(KafkaType.int32).cast<int>();
+    var inSyncReplicas = reader.readArray(KafkaType.int32).cast<int>();
 
     return new PartitionMetadata._(
         errorCode,

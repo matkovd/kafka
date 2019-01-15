@@ -61,7 +61,7 @@ class KafkaBytesReader {
   String readString() {
     var length = readInt16();
     var value = _data.buffer.asInt8List(_offset, length).toList();
-    var valueAsString = UTF8.decode(value);
+    var valueAsString = utf8.decode(value);
     _offset += length;
 
     return valueAsString;
@@ -78,7 +78,7 @@ class KafkaBytesReader {
     }
   }
 
-  List readArray(KafkaType itemType,
+  List<Object> readArray(KafkaType itemType,
       [dynamic objectReadHandler(KafkaBytesReader reader)]) {
     var length = readInt32();
     var items = new List();
