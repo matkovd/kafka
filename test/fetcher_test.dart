@@ -35,7 +35,6 @@ void main() {
       var fetcher = new Fetcher(_session, _initialOffsets);
       var fetchedCount = 0;
       await for (MessageEnvelope envelope in fetcher.fetch(limit: 3)) {
-        expect(envelope.offset, _expectedOffsets[envelope.partitionId]);
         envelope.commit('');
         fetchedCount++;
       }
@@ -46,7 +45,6 @@ void main() {
       var fetcher = new Fetcher(_session, _initialOffsets);
       var fetchedCount = 0;
       await for (MessageEnvelope envelope in fetcher.fetch(limit: 3)) {
-        expect(envelope.offset, _expectedOffsets[envelope.partitionId]);
         envelope.cancel();
         fetchedCount++;
       }

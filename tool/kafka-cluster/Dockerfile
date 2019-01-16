@@ -1,16 +1,21 @@
-# Two-node Kafka Cluster and Zookeeper
+FROM ches/kafka:0.10.1.0
 
-FROM spotify/kafka
+USER root
 
-RUN ["rm", "-f", "/usr/bin/start-kafka.sh"]
-ADD scripts/start-kafka.sh /usr/bin/start-kafka.sh
-RUN ["chmod", "+x", "/usr/bin/start-kafka.sh"]
+ADD config /kafka/config
+ADD scripts/start.sh /start.sh
 
-# Supervisor config
-RUN ["rm", "-f", "/etc/supervisor/conf.d/kafka.conf"]
-ADD supervisor/kafka1.conf supervisor/kafka2.conf /etc/supervisor/conf.d/
+RUN mkdir /data1 /data2
 
-# 2181 is zookeeper, 9092, 9093 is two kafka brokers
-EXPOSE 2181 9092 9093
+RUN chown -R kafka:kafka /kafka /data1 /data2 /logs
+RUN chown -R kafka:kafka /start.sh
+RUN chmod 755 /start.sh
 
-CMD ["supervisord", "-n"]
+USER kafka
+ENV PATH /kafka/bin:$PATH
+WORKDIR /kafka
+
+EXPOSE 9092 9093
+VOLUME [ "/data1", "/data2", "/logs" ]
+
+CMD ["/start.sh"]
